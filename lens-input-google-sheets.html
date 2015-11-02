@@ -1,0 +1,57 @@
+<link rel="import" href="../polymer/polymer.html"> 
+<!--
+A Thelma component for input
+
+##### Example
+
+    <lens-input-google-sheets></lens-input-google-sheets>
+
+@element lens-input-google-sheets
+@blurb A Thelma component
+@status alpha
+@author Nivvedan S
+@homepage http://nivvedan.github.io/lens-input-google-sheets
+-->
+
+<polymer-element name="lens-input-google-sheets" attributes="output">
+
+  <template>
+    <link rel="stylesheet" href="lens-input-google-sheets.css">
+    <div class="th-container">
+	<label class="label">label</label>
+    	<input type="text">		
+    </div>
+  </template>
+  <script>
+    Polymer('lens-input-google-sheets', {
+      /**
+       * Output data
+       *
+       * @property output
+       * @type object
+       * @default undefined
+       */
+      output: undefined,
+
+      // Observe changes on below attributes and trigger _calculateOutput() when changed
+      observe: {
+        // nameOfAttribute: "_calculateOutput",
+      },
+
+      ready: function () {
+        // Ready is a lifecycle callback.
+        // You can do setup work in here.
+        // More info: http://www.polymer-project.org/docs/polymer/polymer.html#lifecyclemethods
+      },
+
+      _calculateOutput: function() {
+        // calculate new output here
+      },
+
+      outputChanged: function(){
+        this.fire('th-output-ready', this);
+      }
+
+    });
+  </script>
+</polymer-element>

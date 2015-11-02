@@ -1,0 +1,15 @@
+{
+  "name": "lens-input-google-sheets",
+  "version": "0.0.0",
+  "keywords": "thelma, polymer, web-components",
+  "main": "lens-input-google-sheets.html",
+  "dependencies": {
+    
+    "core-component-page" : "Polymer/core-component-page#^0.5.5",
+    "th-theme": "thelmanews/th-theme#*",
+    "polymer": "Polymer/polymer#~0.5.1"
+  },
+  "devDependencies": {
+    "web-component-tester": "Polymer/web-component-tester#^1.4.2"
+  }
+}
