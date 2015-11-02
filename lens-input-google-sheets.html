@@ -1,6 +1,7 @@
-<link rel="import" href="../polymer/polymer.html"> 
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../google-sheets/google-sheets.html">
 <!--
-A Thelma component for input
+A Lenses component for input
 
 ##### Example
 
@@ -13,17 +14,27 @@ A Thelma component for input
 @homepage http://nivvedan.github.io/lens-input-google-sheets
 -->
 
-<polymer-element name="lens-input-google-sheets" attributes="output">
-
+<dom-module id="lens-input-google-sheets">
+  <style>
+    .label {
+      font-size: 12px;
+      vertical-align: top;
+      display: block;
+    }
+  </style>
   <template>
     <link rel="stylesheet" href="lens-input-google-sheets.css">
-    <div class="th-container">
-	<label class="label">label</label>
-    	<input type="text">		
+    <div class="lens-container lens-input">
+      <label class="label">Google Sheets URL:</label>
+      <input id="sheets-url" type="text"></input>
     </div>
+    <google-sheets id="sheet" key="{{key}}" tab-id="1"
+               published rows="{{rows}}" tab="{{tab}}" open-in-google-docs-url="{{openInGoogleDocsUrl}}">
+    </google-sheets>
   </template>
   <script>
-    Polymer('lens-input-google-sheets', {
+    Polymer({
+      is: 'lens-input-google-sheets',
       /**
        * Output data
        *
@@ -38,20 +49,78 @@ A Thelma component for input
         // nameOfAttribute: "_calculateOutput",
       },
 
-      ready: function () {
-        // Ready is a lifecycle callback.
-        // You can do setup work in here.
-        // More info: http://www.polymer-project.org/docs/polymer/polymer.html#lifecyclemethods
+      ready: function() {
+        var sheet = document.querySelector('#sheet');
+        sheet.addEventListener('google-sheet-data', this.processSheet.bind(this));
+
+        var inputBox = document.querySelector('#sheets-url');
+        inputBox.addEventListener('input', this.setKey.bind(this));
       },
 
-      _calculateOutput: function() {
-        // calculate new output here
+      setKey: function(e) {
+        var inputText = document.querySelector('#sheets-url').value;
+        var key = this.keyParse(inputText)['key'];
+        if (key) {
+          this.key = key
+        }
+      },
+
+      // keyParse adapted from https://github.com/maxogden/google-spreadsheets-key-parser
+      keyParse: function(str) {
+        var isNew, key
+        if (str.indexOf('http') === -1) return {key: undefined}
+        var url = document.createElement('a');
+        url.href = str;
+        if (url.hostname != "docs.google.com") return {key: undefined}
+        if (this.getURLParameter("key", url)) {
+          isNew = false
+          key = this.getURLParameter("key", url)
+        } else {
+          var parts = url.pathname.split('/')
+          var keyIdx = parts.indexOf('d') + 1
+          key = parts[keyIdx]
+          isNew = true
+        }
+        var result = {key: key}
+        if (isNew) result.isNewSheets = true
+        return result
+      },
+
+      // getURLParameter adapted from https://stackoverflow.com/questions/11582512/how-to-get-url-parameters-with-javascript
+      getURLParameter: function (name, location) {
+        return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
       },
 
       outputChanged: function(){
-        this.fire('th-output-ready', this);
+        this.fire('lens-output-changed', this.output);
+      },
+
+      processSheet: function(e) {
+        var data = [];
+        for (var row in this.rows) {
+          if (row == "authors") {
+            continue;
+          }
+          row = this.rows[row];
+          if (!row.content) {
+            continue;
+          }
+          var content = row.content["$t"];
+          contentlist = content.trim().split(',');
+
+          var jsonrow = {}
+          for (var item in contentlist) {
+            keyvalue = contentlist[item].trim().split(': ');
+            if (keyvalue.length == 2) {
+              jsonrow[keyvalue[0]] = keyvalue[1]
+            }
+          }
+          data.push(jsonrow);
+        }
+        this.output = data;
+        this.outputChanged();
       }
 
     });
   </script>
-</polymer-element>
+</dom-module>

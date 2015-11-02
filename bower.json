@@ -1,15 +1,19 @@
 {
   "name": "lens-input-google-sheets",
   "version": "0.0.0",
-  "keywords": "thelma, polymer, web-components",
+  "keywords": "lenses, polymer, web-components",
   "main": "lens-input-google-sheets.html",
   "dependencies": {
-    
-    "core-component-page" : "Polymer/core-component-page#^0.5.5",
-    "th-theme": "thelmanews/th-theme#*",
-    "polymer": "Polymer/polymer#~0.5.1"
+    "polymer": "Polymer/polymer#^1.2.0",
+    "google-sheets": "GoogleWebComponents/google-sheets#^1.0.1",
+    "webcomponentsjs": "~0.7.15"
   },
   "devDependencies": {
     "web-component-tester": "Polymer/web-component-tester#^1.4.2"
+  },
+  "resolutions": {
+    "webcomponentsjs": "^0.7.2",
+    "polymer": "^1.2.0",
+    "google-apis": "^1.1.0"
   }
 }
